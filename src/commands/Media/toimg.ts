@@ -80,7 +80,7 @@ export default class Command extends BaseCommand {
         const animatedgif = fs.readFileSync(output)
             return void M.reply(
                 animatedgif,
-                MessageType.image,
+                MessageType.video,
                 undefined,
                 undefined
             )
