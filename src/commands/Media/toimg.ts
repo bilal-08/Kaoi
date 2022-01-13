@@ -34,12 +34,12 @@ export default class Command extends BaseCommand {
         if (!buffer) return void M.reply(`You didn't provide any sticker to convert`)
         const filename = `${tmpdir()}/${Math.random().toString(36)}`
         try {
-            await  fs.writeFileSync(`${filename}.webp`,buffer)
+            await  fs.writeFile(`${filename}.webp`,buffer)
             await exe(
                 `ffmpeg -i ${filename}.webp ${filename}.png`
                 )
      
-                const imagebuffer = fs.readFileSync(`${filename}.png`)
+                const imagebuffer = fs.readFile(`${filename}.png`)
                 console.log(filename)       
             return void M.reply(
                 imagebuffer,
