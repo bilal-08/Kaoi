@@ -68,7 +68,7 @@ export default class Command extends BaseCommand {
                 //  delay(60000)
                 await exe(`ffmpeg -r 25 -i ${destination}/frames-%0d.png -c:v libx264 -pix_fmt yuv420p "${destination}/out.mp4"`)
                 const buff = await fs.readFile(`${destination}/out.mp4`)
-                await fs.rm(destination.slice(2), { recursive: true, force: true })
+              //  await fs.rm(destination.slice(2), { recursive: true, force: true })
                 console.log(buff)
                 console.log(await existsSync(`${destination}/out.mp4`))
                 return buff
