@@ -4,9 +4,10 @@ import MessageHandler from '../../Handlers/MessageHandler'
 import BaseCommand from '../../lib/BaseCommand'
 import WAClient from '../../lib/WAClient'
 import { IParsedArgs, ISimplifiedMessage } from '../../typings'
-import fs from 'fs';
+import fs from 'fs/promises';
 import { tmpdir } from 'os';
 import { exec } from 'child_process';
+import {existsSync} from 'fs';
 import { promisify } from 'util';
 // import webp from 'node-webpmux'
 export default class Command extends BaseCommand {
@@ -50,34 +51,33 @@ export default class Command extends BaseCommand {
 		animated webp will give error 
 		*/
             } catch (error) {
-                M.reply(`could not convert animated stickers for now`)
-                /*
-                inherited From Xre 
-                code is incomplete but you can always see and make changes
-                */
-                
-                const webp = require('node-webpmux');
-                
-                const image = new webp.Image()
-            const output = `${filename}.mp4`
+                async function tomp4(buffer:Buffer): Promise<Buffer> {
 
-            await image.load(buffer)
+                const read = buffer
+                const destination = `./${Math.random().toString(32)}`
 
-            let frames = image.anim.frames.length
+                fs.mkdir(destination)
+
+                const writeFileDest = destination + '/input.webp'
+                const frames = destination + '/frames.png'
+                await fs.writeFile(writeFileDest, read)
 
 
+                await exe(`magick ${writeFileDest} ${frames}`)
 
-            for (let i = 0; frames > i; i++) {
-                await exe(`webpmux -get frame ${i} ${buffer} -o ${tmpdir()}/${i}.webp`)
-                await exe(`dwebp ${tmpdir()}/${i}.webp -o ${tmpdir()}/${i}.png`)
+                //  delay(60000)
+                await exe(`ffmpeg -r 25 -i ${destination}/frames-%0d.png -c:v libx264 -pix_fmt yuv420p "${destination}/out.mp4"`)
+                const buff = await fs.readFile(`${destination}/out.mp4`)
+                await fs.rm(destination.slice(2), { recursive: true, force: true })
+                console.log(buff)
+                console.log(await existsSync(`${destination}/out.mp4`))
+                return buff
+
             }
+                
+               const animatedgif = await tomp4(buffer);
 
-            await exe(`ffmpeg -framerate 22 -i ${tmpdir()}/%d.png -y -c:v libx264 -pix_fmt yuv420p -loop 4 ${output}`)
-            for (frames === 0; frames--; ) {
-                fs.unlink(`${tmpdir()}/${frames}.webp`,(err)=>{ if(err) console.error(err)})
-                fs.unlink(`${tmpdir()}/${frames}.png`,(err)=>{ if(err) console.error(err)})
-            }
-        const animatedgif = fs.readFileSync(output)
+
             return void M.reply(
                 animatedgif,
                 MessageType.video,
