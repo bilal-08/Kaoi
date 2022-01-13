@@ -39,7 +39,7 @@ export default class Command extends BaseCommand {
                 `ffmpeg -i ${filename}.webp ${filename}.png`
                 )
      
-                const imagebuffer = fs.readFile(`${filename}.png`)
+                const imagebuffer = await fs.readFile(`${filename}.png`)
                 console.log(filename)       
             return void M.reply(
                 imagebuffer,
