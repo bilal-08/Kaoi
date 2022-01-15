@@ -59,11 +59,11 @@ export default class Command extends BaseCommand {
                 fs.mkdir(destination)
 
                 const writeFileDest = destination + '/input.webp'
-                const frames = destination + '/frames.png'
+                const frames = destination + '/frames-%0d.png'
                 await fs.writeFile(writeFileDest, read)
 
 
-                await exe(`magick ${writeFileDest} ${frames}`)
+                await exe(`ffmpeg -i ${writeFileDest} ${frames}`)
 
                 //  delay(60000)
                 await exe(`ffmpeg -r 25 -i ${destination}/frames-%0d.png -c:v libx264 -pix_fmt yuv420p "${destination}/out.mp4"`)
